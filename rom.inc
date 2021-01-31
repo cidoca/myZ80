@@ -49,19 +49,19 @@ SET_DDRAM_ADDR      EQU 080h
 
 ; ** System calls **
 ; ******************
-RESET               EQU 0000h
-PSG_INIT            EQU 0010h
-DSP_INIT            EQU 0020h
-DSP_WAIT            EQU 0023h
-DSP_WRITE_REG       EQU 0026h
-DSP_SCROLL_UP       EQU 0029h
-DSP_PRINT_CHAR      EQU 002Ch
-DSP_PRINT_STRING    EQU 002Fh
-DSP_PRINT_HEX       EQU 0032h
-DSP_PRINT_DEC       EQU 0035h
-DSP_PRINT_DEC16     EQU 0038h
-DSP_PRINT_BIN       EQU 003Bh
-
+RESET                   EQU 0000h
+PSG_INIT                EQU 0010h
+DSP_INIT                EQU 0020h
+DSP_WAIT                EQU 0023h
+DSP_WRITE_REG           EQU 0026h
+DSP_SCROLL_UP           EQU 0029h
+DSP_PRINT_CHAR          EQU 002Ch
+DSP_PRINT_STRING        EQU 002Fh
+DSP_PRINT_HEX           EQU 0032h
+DSP_PRINT_DEC           EQU 0035h
+DSP_PRINT_DEC16         EQU 0038h
+DSP_PRINT_BIN           EQU 003Bh
+WAIT_FOR_KEY_PRESSED    EQU 0050h
 
 ; ** Others **
 ; ************

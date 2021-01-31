@@ -37,6 +37,9 @@
         JP DSPprintDec16        ; 0038h
         JP DSPprintBin          ; 003Bh
 
+ ORG 0050h
+        JP waitForKeyPressed    ; 0050h
+
 
  ORG 0100h
 main:
@@ -66,10 +69,7 @@ main:
         LD HL, press
         CALL DSPprintString                 ; Display press any key message
 
-.M0:    IN A, (PSG_R_DATA)
-        AND 01Eh
-        CP 01Eh
-        JR Z, .M0                           ; Wait any key to be pressed to continue
+        CALL waitForKeyPressed              ; Wait any key to be pressed to continue
 
         LD A, CLEAR_DISPLAY
         CALL DSPwriteRegister               ; Clear display
@@ -437,6 +437,41 @@ DSPprintBin:
         POP AF
         SLA A
         DJNZ .PB0
+
+        RET
+
+
+; WAIT_FOR_KEY_PRESSED (0050h)
+; Entry ..... None
+; Exit ...... None
+; Modifies .. AF B
+; Wait a key be pressed and released removing bouncing
+; ******************************************************
+waitForKeyPressed:
+        LD A, 14
+        OUT (PSG_W_ADDRESS), A
+
+.W0:    IN A, (PSG_R_DATA)
+        AND 01Eh
+        CP 01Eh
+        JR Z, .W0
+
+        LD B, 0
+.W1:    DJNZ .W1
+.W11:   DJNZ .W11
+.W12:   DJNZ .W12
+.W13:   DJNZ .W13
+
+.W2:    IN A, (PSG_R_DATA)
+        AND 01Eh
+        CP 01Eh
+        JR NZ, .W2
+
+        LD B, 0
+.W3:    DJNZ .W3
+.W31:   DJNZ .W31
+.W32:   DJNZ .W32
+.W33:   DJNZ .W33
 
         RET
 
