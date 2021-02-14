@@ -93,22 +93,18 @@ loadBinary:
         DJNZ .L1                    ; 13/8
         JP .L4                      ; 10    ; Synchronizing with start bit
 
-.L2:    NOP
-        NOP
-        NOP
+.L2:    NOP                         ; 4
+        NOP                         ; 4
         LD C, 8                     ; 7
         LD D, 0                     ; 7     ; Synchronized, starting to read each bit
 
 .L3:    SRL D                       ; 8
         IN A, (PSG_R_DATA)          ; 11
-        AND 080h                    ; 4
+        AND 080h                    ; 7
         OR D                        ; 4
         LD D, A                     ; 4     ; Bit stored
 
-        NOP
-        NOP
-        NOP
-        NOP
+        NOP                         ; 4
         DEC C                       ; 4
         JP NZ, .L3                  ; 10    ; Delay to read next bit
 
