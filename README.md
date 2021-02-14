@@ -2,14 +2,15 @@
 This is one more project for an 8bits computer based on Z80 microprocessor. It is assembled on breadboards with a lot of colorful wires and running with a few MHz clock! It can load binaries directly to RAM via an UART port, play songs and communicate with other external devices with a few GPIOs available. His architecture is pretty simple with CPU, memories and a few I/O peripheral devices. There are no LEDs, they are awesome, but useless when running with a clock in MHz!
 
 ## Loading a binary to RAM
-We don't need to programmer our EEPROM every time after making a change in our code, we just need to load it to RAM. This computer can load Z80 binaries directly to RAM using UART protocol which needs to be setup first to 57600 baud, 8 bits, 1 stop bit and no parity (8N1):
+We don't need to programmer our EEPROM every time after making a change in our code, we just need to load it to RAM. This computer can load Z80 binaries directly to RAM using UART protocol which needs to be setup first to 115200 baud, 8 bits, 1 stop bit and no parity (8N1):
 ```
-$ stty -F /dev/ttyUSB0 57600 cs8 -cstopb -parenb raw
+$ stty -F /dev/ttyUSB0 115200 cs8 -cstopb -parenb raw
 ```
 After that, we can easily load any binary with:
 ```
 $ cat example.bin > /dev/ttyUSB0
 ```
+There is no special UART hardware, the read comunication process is done via software using a synchronized loop.
 
 ## Creating Z80 binaries
 I decided to use [vasm](http://sun.hasenbraten.de/vasm/) to create all binaries for this computer. This powerful assembler can ceate binaries for several platforms with different syntaxes, so for this project we need to compile it for Z80. After download it from his web page, we can compile it like this:
@@ -29,3 +30,7 @@ When we turn on this computer, the program inside the EEPROM will initialize all
 The circuit schematic for this version:<br>
 ![Circuit schematic v1.0](schematics/circuit-schematic-v1.png)
 
+## Architecture v1.1
+A new clock oscillator with 6MHz was added! This will be the new CPU's clock. The previous clocks is still present only for PSG. With a higher clock, it was possible to increase the UART transfer to 115200 baud.<br><br> 
+The circuit schematic for this version:<br>
+![Circuit schematic v1.1](schematics/circuit-schematic-v1.1.png)
