@@ -428,14 +428,13 @@ DSPprintDec16:
 DSPprintBin:
         LD B, 8
 
-.PB0:   BIT 7, A
+.PB0:   SLA A
         PUSH AF
         LD A, '0'
-        JR Z, .PB1
+        JR NC, .PB1
         INC A
 .PB1:   CALL DSPprintChar
         POP AF
-        SLA A
         DJNZ .PB0
 
         RET
