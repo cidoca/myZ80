@@ -52,21 +52,52 @@ main:
 
           LD   HL, ready
           CALL DSPprintString                ; Display ready message
-          LD   A, SET_DDRAM_ADDR | 64
-          CALL DSPwriteRegister
 
           CALL loadBinary                    ; Load binary from UART
 
- IFNDEF DUMP_FIRST_BYTES
+ IFDEF DUMP_FIRST_BYTES                      ; Show first bytes for DEBUG
+          LD   A, CLEAR_DISPLAY
+          CALL DSPwriteRegister              ; Clear display
+
+          LD   HL, RAM_START_POINTER
+          CALL .DUMP                         ; Print first two bytes in binary
+          LD   A, SET_DDRAM_ADDR | 20
+          CALL DSPwriteRegister
+          INC  HL
+          CALL .DUMP                         ; Print second two bytes in binary
+
+          LD   A, SET_DDRAM_ADDR | 64
+          CALL DSPwriteRegister              ; Move cursor to second line
+
+          LD   A, 0
+          LD   (RAM_START_POINTER + 028h), A
+          LD   HL, RAM_START_POINTER
+          CALL DSPprintString                ; Print first 40 bytes received
+
+          HALT                               ; Wait for reset
+
+.DUMP:    LD   A, (HL)
+          CALL DSPprintBin                   ; Print current byte
+          LD   A, ' '
+          CALL DSPprintChar                  ; Print space
+          INC  HL
+          LD   A, (HL)
+          CALL DSPprintBin                   ; Print next byte
+
+          RET
+
+ ELSE
           LD   DE, RAM_START_POINTER
           SBC  HL, DE
+
+          LD   A, SET_DDRAM_ADDR | 64
+          CALL DSPwriteRegister
           CALL DSPprintDec16
           LD   HL, loaded
           CALL DSPprintString                ; Display how many bytes were read
 
           LD   A, SET_DDRAM_ADDR | 20
-          CALL DSPwriteRegister              ; Move to third line
-
+          CALL DSPwriteRegister
           LD   HL, press
           CALL DSPprintString                ; Display press any key message
 
@@ -74,13 +105,14 @@ main:
 
           LD   A, CLEAR_DISPLAY
           CALL DSPwriteRegister              ; Clear display
- ELSE
-          CALL dumpFirstBytes                ; Show first bytes for DEBUG
- ENDIF
 
           JP   RAM_START_POINTER             ; Everything done, let's play!!!!
+ ENDIF
 
 
+; ** !!!! This function can not be optimized !!!!
+; ** Load binary from UART at 115200baud with 6MHz clock
+; ********************************************************
 loadBinary:
           LD   A, 14
           OUT  (PSG_W_ADDRESS), A            ; Define PSG PORTA to read
@@ -115,46 +147,10 @@ loadBinary:
 
 .L4:      LD   A, H
           OR   L
-          CP   080h
+          CP   RAM_START_POINTER >> 8
           JP   Z, .L0                        ; HL not changed, try again...
 
           RET
-
-
- IFDEF DUMP_FIRST_BYTES
-dumpFirstBytes:
-          LD   A, CLEAR_DISPLAY
-          CALL DSPwriteRegister              ; Clear display
-
-          LD   C, 4
-          LD   HL, 08000h
-.D0:      LD   B, 8
-          LD   D, (HL)                       ; Start loop
-
-.D1:      LD   A, D
-          AND  1
-          ADD  '0'
-          CALL DSPprintChar
-          SRL  D
-          DJNZ .D1                           ; Print byte in binary (LSB first)
-
-          LD   A, ' '
-          CALL DSPprintChar                  ; Print space
-
-          INC  HL
-          DEC  C
-          JR   NZ, .D0                       ; Repeat for first 4 bytes
-
-          LD   A, SET_DDRAM_ADDR | 64
-          CALL DSPwriteRegister              ; Move cursor to second line
-
-          LD   A, 0
-          LD   (08028h), A
-          LD   HL, 08000h
-          CALL DSPprintString                ; Print bytes received
-
-.D2:      JR   .D2                           ; Halt
- ENDIF
 
 
 ; *******************
