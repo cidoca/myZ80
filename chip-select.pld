@@ -2,15 +2,17 @@ GAL16V8
 Z80CS
 
 
-CLK IORQ MREQ NC  WR   M1     RFSH A0  A1   GND
-/OE A15  NC   BC1 BDIR SNDCLK /RAM DSP /ROM VCC
+CLK IORQ MREQ WR  M1   RFSH   A0   A1  A13  GND
+/OE A14  A15  BC1 BDIR SNDCLK /RAM DSP /ROM VCC
 
 
 SNDCLK.R = /SNDCLK
 
-RAM = /MREQ * RFSH * A15
+RAM = /MREQ * RFSH * A15 +
+      /MREQ * RFSH * A14 +
+      /MREQ * RFSH * A13
 
-ROM = /MREQ * RFSH * WR * /A15
+ROM = /MREQ * RFSH * WR * /A15 * /A14 * /A13
 
 DSP = /IORQ * M1 * /A1
 
@@ -22,8 +24,8 @@ BC1 = /IORQ * M1 * A1 * A0
 DESCRIPTION
 Z80 chip select - IO and address decoder
 
-  /RAM   - RAM selected, A15 is HIGH (RFSH)
-  /ROM   - ROM selected, A15 is LOW (RFSH, WR)
+  /RAM   - RAM selected, A15 or A14 or A13 are HIGH (RFSH)
+  /ROM   - ROM selected, A15 and A14 and A13 are LOW (RFSH, WR)
   SNDCLK - Main clock divided by 2
   DSP    - Display selected, IO port ------0X
   BDIR   - Sound/GIO selected, IO port ------1X (/WR)
