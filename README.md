@@ -28,7 +28,7 @@ Z80 can also make I/O requests! Using these requests, we can access several devi
 Usually, we need to use a lot of logic gates to make those decodes! To avoid having a lot of 74XX components to implement every logic gate, we can use GALs (Generic Array Logic). We can programmer almost all logic gates inside these chips. For this project, we only need to use one GAL (ATF16V8)! More details about how make address and I/O decode are [here](chip-select.pld). To programmer a GAL, we need a GAL assembler, I am using [GALasm](https://github.com/daveho/GALasm) to create the JEDEC file.<br><br>
 When we turn on this computer, the program inside the EEPROM will initialize all devices (LCD and PSG), and will wait for a binary transfer to start from UART port. With 3.58Mhz, we have enough speed to synchronize with 57600 baud to receive all binary and load it in our SRAM. Once loaded, the program will be executed directly from SRAM without having to programmer again the EEPROM. In our EEPROM, we also have a few system calls, very useful to interact with LCD, more system calls will be added in the future!<br><br>
 The circuit schematic for this version:<br>
-![Circuit schematic v1.0](schematics/circuit-schematic-v1.png)
+![Circuit schematic v1.0](schematics/circuit-schematic-v1.0.png)
 
 ## Architecture v1.1
 A new clock oscillator with 6MHz was added! This will be the new CPU's clock. The previous clocks is still present only for PSG. With a higher clock, it was possible to increase the UART transfer to 115200 baud.<br><br> 
